@@ -1,0 +1,25 @@
+Option Explicit
+  
+Sub DeletarTodasMedidas()
+
+Dim ObjMs               As Excel.ModelMeasures
+Dim ObjM                As Excel.ModelMeasure
+Dim Nome                As String
+
+    Set ObjMs = ActiveWorkbook.Model.ModelMeasures
+    
+    Application.ScreenUpdating = False
+    
+    For Each ObjM In ObjMs
+        Nome = ObjM.Name
+        ObjMs(Nome).Delete
+    Next ObjM
+    
+    wsDados.Cells.Delete
+    
+    Application.ScreenUpdating = True
+    
+    MsgBox "TODAS as medidas foram EXCLUÍDAS com Sucesso.", vbInformation, "DAX"
+    
+End Sub
+
