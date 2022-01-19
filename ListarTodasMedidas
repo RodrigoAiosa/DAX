@@ -1,67 +1,27 @@
-Option Explicit
-
 Sub ListarTodasMedidas()
 
-Dim ObjMs As ModelMeasures
-Dim ObjM As ModelMeasure
-Dim objMName As ModelMeasureNames
-Dim objMTable As ModelTable
-Dim objMFmt As Object
+Dim wsD                 As Excel.Worksheet
+Dim ObjMs               As Excel.ModelMeasures
+Dim ObjM                As Excel.ModelMeasure
+Dim Nome                As String
+Dim i                   As Byte
 
-Dim strFormat As String, strSymbol As String, strDec As String, strDateString As String
-Dim iDec As Integer
-Dim bIsNum As Boolean, bThouSep As Boolean
-Dim i%
-   
+    Set wsD = wsDados
     Set ObjMs = ActiveWorkbook.Model.ModelMeasures
-    i% = 1
-   
+    i = 1
+    
+    wsD.Cells(1, 1).Value2 = "MEDIDA"
+    'wsD.Cells(1, 2).Value2 = "FORMULA"
+    
     For Each ObjM In ObjMs
-        i% = i% + 1
-        bIsNum = False
-        Set objMTable = ObjM.AssociatedTable
-        Cells(i%, 1).Value = ObjM.Formula
-        Cells(i%, 2).Value = ObjM.Name
-        Cells(i%, 3).Value = objMTable.SourceName
- 
-        Set objMFmt = ObjM.FormatInformation
-       
-        Select Case TypeName(objMFmt)
-            Case "ModelFormatBoolean"
-                strFormat$ = "ModelFormatBoolean"
-            Case "ModelFormatCurrency"
-                strFormat$ = "ModelFormatCurrency"
-                strDec$ = CStr(objMFmt.DecimalPlaces)
-'                bThouSep = objMFmt.UseThousandSeparator
-                strSymbol$ = objMFmt.Symbol
-            Case "ModelFormatDate"
-                strFormat$ = "ModelFormatDate"
-                strDateString$ = objMFmt.FormatString
-            Case "ModelFormatDecimalNumber"
-                strFormat$ = "ModelFormatDecimalNumber"
-                strDec$ = CStr(objMFmt.DecimalPlaces)
-                bThouSep = objMFmt.UseThousandSeparator
-                bIsNum = True
-            Case "ModelFormatGeneral"
-                strFormat$ = "ModelFormatGeneral"
-            Case "ModelFormatPercentageNumber"
-                strFormat$ = "ModelFormatPercentageNumber"
-                strDec$ = CStr(objMFmt.DecimalPlaces)
-            Case "ModelFormatScientificNumber"
-                strFormat$ = "ModelFormatScientificNumber"
-                strDec$ = CStr(objMFmt.DecimalPlaces)
-                bThouSep = objMFmt.UseThousandSeparator
-                bIsNum = True
-            Case "ModelFormatWholeNumber"
-                strFormat$ = "ModelFormatWholeNumber"
-                bThouSep = objMFmt.UseThousandSeparator
-                bIsNum = True
-            Case Else
-                strFormat$ = "not defined"
-        End Select
-        Cells(i%, 4).Value = strFormat$
-
+        i = i + 1
+        With wsD
+            .Cells(i, 1).Value = ObjM.Name
+            '.Cells(i, 2).Value = ObjM.Formula
+            .Cells.EntireColumn.AutoFit
+            .Cells.EntireRow.AutoFit
+        End With
+        
     Next ObjM
-
-
+    
 End Sub
