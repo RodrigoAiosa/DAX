@@ -1,0 +1,153 @@
+Option Explicit
+Public wb As Excel.Workbook
+
+Sub Medida_ReceitaBrutaAcumulada()
+    
+    Set wb = ActiveWorkbook
+    
+    With wb.Model
+        .ModelMeasures.Add "Receita Bruta Acum.", _
+        .ModelTables("fVendas"), _
+        "CALCULATE([Receita Bruta];FILTER(ALLSELECTED(dCalendario[DATA]);ISONORAFTER(dCalendario[DATA];MAX(dCalendario[DATA]);DESC)))" _
+    , .ModelFormatCurrency("Default", 2)
+    End With
+
+End Sub
+
+Sub Medida_Lucro()
+    
+    Set wb = ActiveWorkbook
+    
+    With wb.Model
+        .ModelMeasures.Add "Lucro", _
+        .ModelTables("fVendas"), "[Receita Bruta]-[Total Custo]", _
+        .ModelFormatWholeNumber(True)
+    End With
+
+End Sub
+
+Sub Medida_TotalCusto()
+    
+    Set wb = ActiveWorkbook
+    
+    With wb.Model
+        .ModelMeasures.Add "Total Custo", _
+        .ModelTables("fVendas"), "SUM(dProduto[PREÇO DE CUSTO])", _
+        .ModelFormatWholeNumber(True)
+    End With
+
+End Sub
+
+Sub Medida_QtdeProduto()
+    
+    Set wb = ActiveWorkbook
+    
+    With wb.Model
+        .ModelMeasures.Add "Qtde Produto", _
+        .ModelTables("fVendas"), "COUNTROWS(dProduto)", _
+        .ModelFormatWholeNumber(True)
+    End With
+
+End Sub
+
+Sub Medida_DataUltimaCompra()
+    
+    Set wb = ActiveWorkbook
+    
+    With wb.Model
+        .ModelMeasures.Add "Data Ultíma Compra", _
+        .ModelTables("fVendas"), "LASTDATE(fVendas[DATA])", _
+        .ModelFormatDate("Short Date")
+    End With
+
+End Sub
+Sub Medida_DataPrimeiraCompra()
+    
+    Set wb = ActiveWorkbook
+    
+    With wb.Model
+        .ModelMeasures.Add "Data Primeira Compra", _
+        .ModelTables("fVendas"), "FIRSTDATE(fVendas[DATA])", _
+        .ModelFormatDate("Short Date")
+    End With
+
+End Sub
+Sub Medida_TotalRegistro()
+    
+    Set wb = ActiveWorkbook
+    
+    With wb.Model
+        .ModelMeasures.Add "Total Registro", _
+        .ModelTables("fVendas"), "COUNTROWS(fVendas)", _
+        .ModelFormatWholeNumber(True)
+    End With
+
+End Sub
+Sub Medida_TotalQtde()
+    
+    Set wb = ActiveWorkbook
+    
+    With wb.Model
+        .ModelMeasures.Add "Total Qtde", _
+        .ModelTables("fVendas"), "SUM(fVendas[QTDE])", _
+        .ModelFormatWholeNumber(True)
+    End With
+    
+End Sub
+Sub Medida_ReceitaBruta()
+    
+    Set wb = ActiveWorkbook
+
+    With wb.Model
+        .ModelMeasures.Add "Receita Bruta", _
+        .ModelTables("fVendas"), "SUMX(fVendas;RELATED(dProduto[PREÇO UNITÁRIO])*fVendas[QTDE])", _
+        .ModelFormatCurrency("Default", 2)
+    End With
+    
+End Sub
+Sub Medida_YoY()
+    
+    Set wb = ActiveWorkbook
+
+    With wb.Model
+        .ModelMeasures.Add "%YoY", _
+        .ModelTables("fVendas"), "" & Chr(13) & "" & Chr(10) & "VAR ReceitaAno = CALCULATE([Receita Bruta];DATEADD(dCalendario[DATA];-1;YEAR))" & Chr(13) & "" & Chr(10) & "RETURN" & Chr(13) & "" & Chr(10) & "DIVIDE([Receita Bruta]-ReceitaAno;ReceitaAno)" _
+        , ActiveWorkbook.Model.ModelFormatPercentageNumber(False, 2)
+    End With
+    
+End Sub
+Sub Medida_MoM()
+    
+    Set wb = ActiveWorkbook
+
+    With wb.Model
+        .ModelMeasures.Add "%MoM", _
+        .ModelTables("fVendas"), "" & Chr(13) & "" & Chr(10) & "VAR ReceitaAno = CALCULATE([Receita Bruta];DATEADD(dCalendario[DATA];-1;MONTH))" & Chr(13) & "" & Chr(10) & "RETURN" & Chr(13) & "" & Chr(10) & "DIVIDE([Receita Bruta]-ReceitaAno;ReceitaAno)" _
+        , ActiveWorkbook.Model.ModelFormatPercentageNumber(False, 2)
+    End With
+    
+End Sub
+Sub CriarMedidas()
+
+    Application.ScreenUpdating = False
+        On Error Resume Next
+        
+        Call Medida_TotalRegistro
+        Call Medida_TotalQtde
+        Call Medida_QtdeProduto
+        Call Medida_ReceitaBruta
+        Call Medida_ReceitaBrutaAcumulada
+        Call Medida_TotalCusto
+        Call Medida_Lucro
+        Call Medida_DataUltimaCompra
+        Call Medida_DataPrimeiraCompra
+        Call Medida_YoY
+        Call Medida_MoM
+        Call ListarTodasMedidas
+        
+    Application.ScreenUpdating = True
+    
+    MsgBox "Foram criadas " & ThisWorkbook.Model.ModelMeasures.Count & " medidas com sucesso.", vbInformation, "DAX"
+    
+End Sub
+
